@@ -5,16 +5,24 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet("/DemoServlet")
 public class DemoServlet extends HttpServlet {
 
+
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+
         Float sum = getPersistentSum();
+        Integer enterCount = getPersistentEnterCount();
         String body = getBody( request ); System.out.println( body );
         String[] params = body.split(",");
         String event = params[0];
         String priceString = params[5];
+
+
+
         if ( ! "_".equals( priceString ) ){
             // strip € in front, parse the number behind
             float price = Float.parseFloat( priceString.split(" ")[2] );
@@ -22,9 +30,26 @@ public class DemoServlet extends HttpServlet {
             // store sum persistently in ServletContext
             getApplication().setAttribute("sum", sum );
         }
+
+        if (event.equals("enter")){
+           ++enterCount;
+           getApplication().setAttribute("enterCount", enterCount);
+        }
+
+
+
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         out.println( sum );
+    }
+
+    private Integer getPersistentEnterCount() {
+        Integer count;
+        ServletContext application = getApplication();
+        count = (Integer)application.getAttribute("enterCount");
+        if(count == null){count = 0;}
+        return count;
+
     }
 
     @Override
@@ -34,14 +59,33 @@ public class DemoServlet extends HttpServlet {
         String command = requestParamString[0];
         String param = requestParamString[1];
 
-        if ( "fun".equals( command ) && "sum".equals( param ) ){
-            Float sum = getPersistentSum();
+        if ( "fun".equals( command )){
+            if ("sum".equals( param )) {
+                Float sum = getPersistentSum();
 
-            resp.setContentType("text/html");
-            PrintWriter out = resp.getWriter();
-            out.println( sum );
+                resp.setContentType("text/html");
+                PrintWriter out = resp.getWriter();
+                out.println(sum);
 
-            System.out.println( "sum = " + sum );
+                System.out.println("sum = " + sum);
+            }else if ("average".equals(param)){
+                Float sum = getPersistentSum();
+                Integer enterCount = getPersistentEnterCount();
+                Float average = 0.0f;
+
+                resp.setContentType("text/html");
+                PrintWriter out = resp.getWriter();
+
+                if (enterCount !=0) average = sum/enterCount;
+
+                out.println(average);
+
+                System.out.println("average = " + average);
+
+
+            }else {
+                System.out.println( "Invalid Parameter: " + req.getQueryString() );
+            }
         } else {
             System.out.println( "Invalid Command: " + req.getQueryString() );
         }
