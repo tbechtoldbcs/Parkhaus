@@ -5,8 +5,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet("/DemoServlet")
 public class DemoServlet extends HttpServlet {
@@ -15,6 +13,7 @@ public class DemoServlet extends HttpServlet {
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
 
         Float sum = getPersistentSum();
+        Float maximum = getPersistentMaximum();
         Integer enterCount = getPersistentEnterCount();
         String body = getBody( request ); System.out.println( body );
         String[] params = body.split(",");
@@ -27,8 +26,10 @@ public class DemoServlet extends HttpServlet {
             // strip € in front, parse the number behind
             float price = Float.parseFloat( priceString.split(" ")[2] );
             sum += price;
+            if (maximum<price) getApplication().setAttribute("maximum", price );
             // store sum persistently in ServletContext
             getApplication().setAttribute("sum", sum );
+
         }
 
         if (event.equals("enter")){
@@ -43,15 +44,6 @@ public class DemoServlet extends HttpServlet {
         out.println( sum );
     }
 
-    private Integer getPersistentEnterCount() {
-        Integer count;
-        ServletContext application = getApplication();
-        count = (Integer)application.getAttribute("enterCount");
-        if(count == null){count = 0;}
-        return count;
-
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -59,8 +51,8 @@ public class DemoServlet extends HttpServlet {
         String command = requestParamString[0];
         String param = requestParamString[1];
 
-        if ( "fun".equals( command )){
-            if ("sum".equals( param )) {
+        if ( "fun".equals( command )) {
+            if ("sum".equals(param)) {
                 Float sum = getPersistentSum();
 
                 resp.setContentType("text/html");
@@ -68,7 +60,7 @@ public class DemoServlet extends HttpServlet {
                 out.println(sum);
 
                 System.out.println("sum = " + sum);
-            }else if ("average".equals(param)){
+            } else if ("average".equals(param)) {
                 Float sum = getPersistentSum();
                 Integer enterCount = getPersistentEnterCount();
                 Float average = 0.0f;
@@ -76,14 +68,22 @@ public class DemoServlet extends HttpServlet {
                 resp.setContentType("text/html");
                 PrintWriter out = resp.getWriter();
 
-                if (enterCount !=0) average = sum/enterCount;
+                if (enterCount != 0) average = sum / enterCount;
 
                 out.println(average);
 
                 System.out.println("average = " + average);
 
+            } else if ("maximum".equals(param)) {
+                Float maximum =getPersistentMaximum();
 
-            }else {
+                resp.setContentType("text/html");
+                PrintWriter out = resp.getWriter();
+                out.println(maximum);
+
+                System.out.println("maximum = " + maximum);
+
+            } else {
                 System.out.println( "Invalid Parameter: " + req.getQueryString() );
             }
         } else {
@@ -101,6 +101,23 @@ public class DemoServlet extends HttpServlet {
         sum = (Float)application.getAttribute("sum");
         if ( sum == null ) sum = 0.0f;
         return sum;
+    }
+
+    private Float getPersistentMaximum(){
+        Float maximum;
+        ServletContext application = getApplication();
+        maximum = (Float)application.getAttribute("maximum");
+        if ( maximum == null ) maximum = 0.0f;
+        return maximum;
+    }
+
+    private Integer getPersistentEnterCount() {
+        Integer count;
+        ServletContext application = getApplication();
+        count = (Integer)application.getAttribute("enterCount");
+        if(count == null){count = 0;}
+        return count;
+
     }
 
     private static String getBody(HttpServletRequest request) throws IOException {
