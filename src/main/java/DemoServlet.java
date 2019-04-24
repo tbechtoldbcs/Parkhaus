@@ -9,9 +9,7 @@ import java.io.*;
 @WebServlet("/DemoServlet")
 public class DemoServlet extends HttpServlet {
 
-
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-
         Float sum = getPersistentSum();
         Float maximum = getPersistentMaximum();
         Integer enterCount = getPersistentEnterCount();
@@ -20,8 +18,6 @@ public class DemoServlet extends HttpServlet {
         String event = params[0];
         String priceString = params[5];
 
-
-
         if ( ! "_".equals( priceString ) ){
             // strip € in front, parse the number behind
             float price = Float.parseFloat( priceString.split(" ")[2] );
@@ -29,15 +25,12 @@ public class DemoServlet extends HttpServlet {
             if (maximum<price) getApplication().setAttribute("maximum", price );
             // store sum persistently in ServletContext
             getApplication().setAttribute("sum", sum );
-
         }
 
         if (event.equals("enter")){
            ++enterCount;
            getApplication().setAttribute("enterCount", enterCount);
         }
-
-
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -46,7 +39,6 @@ public class DemoServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String[] requestParamString = req.getQueryString().split("=");
         String command = requestParamString[0];
         String param = requestParamString[1];
@@ -67,9 +59,7 @@ public class DemoServlet extends HttpServlet {
 
                 resp.setContentType("text/html");
                 PrintWriter out = resp.getWriter();
-
                 if (enterCount != 0) average = sum / enterCount;
-
                 out.println(average);
 
                 System.out.println("average = " + average);
@@ -117,7 +107,6 @@ public class DemoServlet extends HttpServlet {
         count = (Integer)application.getAttribute("enterCount");
         if(count == null){count = 0;}
         return count;
-
     }
 
     private static String getBody(HttpServletRequest request) throws IOException {
