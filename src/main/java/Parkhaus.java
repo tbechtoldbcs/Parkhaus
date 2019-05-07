@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
-@WebServlet("/DemoServlet")
-public class DemoServlet extends HttpServlet {
+@WebServlet("/Parkhaus")
+public class Parkhaus extends HttpServlet {
 
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
         Float sum = getPersistentSum();

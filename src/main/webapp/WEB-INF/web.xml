@@ -20,12 +20,12 @@
   </filter-mapping>
 
   <servlet>
-      <servlet-name>DemoServlet</servlet-name>
-      <servlet-class>DemoServlet</servlet-class>
+      <servlet-name>ParkhausServlet</servlet-name>
+      <servlet-class>Parkhaus</servlet-class>
   </servlet>
 
   <servlet-mapping>
-      <servlet-name>DemoServlet</servlet-name>
-      <url-pattern>/DemoServlet</url-pattern>
+      <servlet-name>ParkhausServlet</servlet-name>
+      <url-pattern>/Parkhaus</url-pattern>
   </servlet-mapping>
 </web-app>

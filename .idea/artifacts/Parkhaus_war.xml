@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="DemoServlet.war">
+    <root id="archive" name="Parkhaus.war">
       <element id="artifact" artifact-name="Parkhaus:war exploded" />
     </root>
   </artifact>
